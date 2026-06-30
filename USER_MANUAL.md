@@ -40,6 +40,14 @@ On Apple Silicon, the default build uses the project's normal backend selection,
 HF_MODEL=ggml-org/gemma-3-1b-it-GGUF mise run run-hf
 ```
 
+### 4. Run the saved Gemma coder model
+
+```bash
+mise run run-gemma-4-12b-coder-fable5
+```
+
+This launches `yuxinlu1/gemma-4-12B-coder-fable5-composer2.5-v1-GGUF` directly, without needing to set `HF_MODEL`.
+
 ### 4. Or run a local GGUF model
 
 ```bash
@@ -70,6 +78,7 @@ The server is OpenAI-compatible, so many OpenAI-client tools can point to it as 
 | `mise run python-sync` | Creates `.venv` and installs Python helper dependencies with `uv` | Use conversion and helper scripts |
 | `MODEL=/path/to/model.gguf mise run run-cli` | Runs `llama-cli` with a local model | Basic local inference |
 | `HF_MODEL=org/model mise run run-hf` | Runs `llama-cli` with a model downloaded from Hugging Face | Fastest way to try the project |
+| `mise run run-gemma-4-12b-coder-fable5` | Runs `yuxinlu1/gemma-4-12B-coder-fable5-composer2.5-v1-GGUF` | Quick one-command launch for this saved model |
 | `MODEL=/path/to/model.gguf mise run serve` | Runs the OpenAI-compatible server with a local model | Local API serving |
 | `HF_MODEL=org/model mise run serve-hf` | Runs the OpenAI-compatible server with a Hugging Face model | Quick server setup |
 | `mise run clean` | Removes build directories and local Python env/cache folders | Reset local build artifacts |
@@ -94,6 +103,12 @@ MODEL=/absolute/path/to/model.gguf mise run run-cli
 
 ```bash
 HF_MODEL=ggml-org/gemma-3-1b-it-GGUF mise run run-hf
+```
+
+### Run the saved Gemma coder model
+
+```bash
+mise run run-gemma-4-12b-coder-fable5
 ```
 
 The first run may download model artifacts into the standard Hugging Face cache location.

@@ -54,6 +54,10 @@ run = "./${BUILD_DIR}/bin/llama-cli -m \"${MODEL:?Set MODEL=/absolute/path/to/mo
 description = "Download a model from Hugging Face and run it with llama-cli; pass HF_MODEL=org/model-name"
 run = "./${BUILD_DIR}/bin/llama-cli -hf \"${HF_MODEL:?Set HF_MODEL=org/model-name}\""
 
+[tasks.run-gemma-4-12b-coder-fable5]
+description = "Run yuxinlu1/gemma-4-12B-coder-fable5-composer2.5-v1-GGUF with llama-cli"
+run = "./${BUILD_DIR}/bin/llama-cli -hf yuxinlu1/gemma-4-12B-coder-fable5-composer2.5-v1-GGUF"
+
 [tasks.serve]
 description = "Start the OpenAI-compatible server with a local GGUF model; pass MODEL=/absolute/path/to/model.gguf"
 run = "./${BUILD_DIR}/bin/llama-server -m \"${MODEL:?Set MODEL=/absolute/path/to/model.gguf}\""
