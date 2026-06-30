@@ -48,7 +48,23 @@ mise run run-gemma-4-12b-coder-fable5
 
 This launches `yuxinlu1/gemma-4-12B-coder-fable5-composer2.5-v1-GGUF` directly, without needing to set `HF_MODEL`.
 
-### 4. Or run a local GGUF model
+### 5. Run Gemma 4 26B
+
+```bash
+mise run run-gemma-4-26b
+```
+
+This launches `unsloth/gemma-4-26B-A4B-it-GGUF`.
+
+### 6. Run Gemma 4 31B
+
+```bash
+mise run run-gemma-4-31b
+```
+
+This launches `unsloth/gemma-4-31B-it-GGUF`.
+
+### 7. Or run a local GGUF model
 
 ```bash
 MODEL=/absolute/path/to/model.gguf mise run run-cli
@@ -79,6 +95,8 @@ The server is OpenAI-compatible, so many OpenAI-client tools can point to it as 
 | `MODEL=/path/to/model.gguf mise run run-cli` | Runs `llama-cli` with a local model | Basic local inference |
 | `HF_MODEL=org/model mise run run-hf` | Runs `llama-cli` with a model downloaded from Hugging Face | Fastest way to try the project |
 | `mise run run-gemma-4-12b-coder-fable5` | Runs `yuxinlu1/gemma-4-12B-coder-fable5-composer2.5-v1-GGUF` | Quick one-command launch for this saved model |
+| `mise run run-gemma-4-26b` | Runs `unsloth/gemma-4-26B-A4B-it-GGUF` | Quick one-command launch for Gemma 4 26B |
+| `mise run run-gemma-4-31b` | Runs `unsloth/gemma-4-31B-it-GGUF` | Quick one-command launch for Gemma 4 31B |
 | `MODEL=/path/to/model.gguf mise run serve` | Runs the OpenAI-compatible server with a local model | Local API serving |
 | `HF_MODEL=org/model mise run serve-hf` | Runs the OpenAI-compatible server with a Hugging Face model | Quick server setup |
 | `mise run clean` | Removes build directories and local Python env/cache folders | Reset local build artifacts |
@@ -109,6 +127,18 @@ HF_MODEL=ggml-org/gemma-3-1b-it-GGUF mise run run-hf
 
 ```bash
 mise run run-gemma-4-12b-coder-fable5
+```
+
+### Run Gemma 4 26B
+
+```bash
+mise run run-gemma-4-26b
+```
+
+### Run Gemma 4 31B
+
+```bash
+mise run run-gemma-4-31b
 ```
 
 The first run may download model artifacts into the standard Hugging Face cache location.
@@ -172,6 +202,16 @@ mise run sync-source
 ### Hugging Face authentication
 
 Some models require Hugging Face authentication. If a model is gated, authenticate with your usual Hugging Face workflow before using `-hf`.
+
+### Which Gemma repos these shortcuts use
+
+The dedicated Gemma tasks currently point to:
+
+- `yuxinlu1/gemma-4-12B-coder-fable5-composer2.5-v1-GGUF`
+- `unsloth/gemma-4-26B-A4B-it-GGUF`
+- `unsloth/gemma-4-31B-it-GGUF`
+
+If you want these switched to different owners or quantizations, update the matching tasks in `mise.toml`.
 
 ### CUDA
 

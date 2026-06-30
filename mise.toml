@@ -58,6 +58,14 @@ run = "./${BUILD_DIR}/bin/llama-cli -hf \"${HF_MODEL:?Set HF_MODEL=org/model-nam
 description = "Run yuxinlu1/gemma-4-12B-coder-fable5-composer2.5-v1-GGUF with llama-cli"
 run = "./${BUILD_DIR}/bin/llama-cli -hf yuxinlu1/gemma-4-12B-coder-fable5-composer2.5-v1-GGUF"
 
+[tasks.run-gemma-4-26b]
+description = "Run unsloth/gemma-4-26B-A4B-it-GGUF with llama-cli"
+run = "./${BUILD_DIR}/bin/llama-cli -hf unsloth/gemma-4-26B-A4B-it-GGUF"
+
+[tasks.run-gemma-4-31b]
+description = "Run unsloth/gemma-4-31B-it-GGUF with llama-cli"
+run = "./${BUILD_DIR}/bin/llama-cli -hf unsloth/gemma-4-31B-it-GGUF"
+
 [tasks.serve]
 description = "Start the OpenAI-compatible server with a local GGUF model; pass MODEL=/absolute/path/to/model.gguf"
 run = "./${BUILD_DIR}/bin/llama-server -m \"${MODEL:?Set MODEL=/absolute/path/to/model.gguf}\""
