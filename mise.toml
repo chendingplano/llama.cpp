@@ -1,0 +1,67 @@
+[env]
+PROJECT_ROOT = "{{config_root}}"
+BUILD_DIR = "build"
+DEBUG_BUILD_DIR = "build-debug"
+STATIC_BUILD_DIR = "build-static"
+CUDA_BUILD_DIR = "build-cuda"
+CPU_ONLY_BUILD_DIR = "build-cpu"
+
+[tasks.status]
+description = "Show the local repo status and current upstream remote"
+run = "git status --short --branch && git remote -v"
+
+[tasks.sync-source]
+description = "Fetch and fast-forward the local checkout from the official GitHub repo"
+run = "git fetch origin --prune --tags && git pull --ff-only"
+
+[tasks.full-history]
+description = "Convert the shallow clone into a full clone"
+run = "git fetch --unshallow --tags origin"
+
+[tasks.build]
+description = "Build llama.cpp with the default local backend selection"
+run = "cmake -B ${BUILD_DIR} -DCMAKE_BUILD_TYPE=Release && cmake --build ${BUILD_DIR} --config Release -j $(sysctl -n hw.ncpu)"
+
+[tasks.build-debug]
+description = "Build a debug configuration"
+run = "cmake -B ${DEBUG_BUILD_DIR} -DCMAKE_BUILD_TYPE=Debug && cmake --build ${DEBUG_BUILD_DIR} -j $(sysctl -n hw.ncpu)"
+
+[tasks.build-static]
+description = "Build static binaries and libraries"
+run = "cmake -B ${STATIC_BUILD_DIR} -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF && cmake --build ${STATIC_BUILD_DIR} --config Release -j $(sysctl -n hw.ncpu)"
+
+[tasks.build-cpu]
+description = "Build a CPU-only variant with Metal disabled"
+run = "cmake -B ${CPU_ONLY_BUILD_DIR} -DCMAKE_BUILD_TYPE=Release -DGGML_METAL=OFF && cmake --build ${CPU_ONLY_BUILD_DIR} --config Release -j $(sysctl -n hw.ncpu)"
+
+[tasks.build-cuda]
+description = "Build with CUDA enabled"
+run = "cmake -B ${CUDA_BUILD_DIR} -DCMAKE_BUILD_TYPE=Release -DGGML_CUDA=ON && cmake --build ${CUDA_BUILD_DIR} --config Release -j $(sysctl -n hw.ncpu)"
+
+[tasks.test]
+description = "Run CTest against the default build directory"
+run = "ctest --test-dir ${BUILD_DIR} --output-on-failure"
+
+[tasks.python-sync]
+description = "Create a local Python virtual environment and install helper-script dependencies with uv"
+run = "uv venv .venv && uv sync"
+
+[tasks.run-cli]
+description = "Run llama-cli with a local GGUF model; pass MODEL=/absolute/path/to/model.gguf"
+run = "./${BUILD_DIR}/bin/llama-cli -m \"${MODEL:?Set MODEL=/absolute/path/to/model.gguf}\""
+
+[tasks.run-hf]
+description = "Download a model from Hugging Face and run it with llama-cli; pass HF_MODEL=org/model-name"
+run = "./${BUILD_DIR}/bin/llama-cli -hf \"${HF_MODEL:?Set HF_MODEL=org/model-name}\""
+
+[tasks.serve]
+description = "Start the OpenAI-compatible server with a local GGUF model; pass MODEL=/absolute/path/to/model.gguf"
+run = "./${BUILD_DIR}/bin/llama-server -m \"${MODEL:?Set MODEL=/absolute/path/to/model.gguf}\""
+
+[tasks.serve-hf]
+description = "Start the OpenAI-compatible server with a Hugging Face model; pass HF_MODEL=org/model-name"
+run = "./${BUILD_DIR}/bin/llama-server -hf \"${HF_MODEL:?Set HF_MODEL=org/model-name}\""
+
+[tasks.clean]
+description = "Remove local build directories and the Python virtual environment"
+run = "rm -rf ${BUILD_DIR} ${DEBUG_BUILD_DIR} ${STATIC_BUILD_DIR} ${CUDA_BUILD_DIR} ${CPU_ONLY_BUILD_DIR} .venv .pytest_cache .ruff_cache"
