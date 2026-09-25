@@ -54,28 +54,6 @@ run = "./${BUILD_DIR}/bin/llama-cli -m \"${MODEL:?Set MODEL=/absolute/path/to/mo
 description = "Download a model from Hugging Face and run it with llama-cli; pass HF_MODEL=org/model-name"
 run = "./${BUILD_DIR}/bin/llama-cli -hf \"${HF_MODEL:?Set HF_MODEL=org/model-name}\""
 
-[tasks.run-gemma-4-12b-coder-fable5]
-description = "Run yuxinlu1/gemma-4-12B-coder-fable5-composer2.5-v1-GGUF with llama-cli"
-run = "./${BUILD_DIR}/bin/llama-cli -hf yuxinlu1/gemma-4-12B-coder-fable5-composer2.5-v1-GGUF"
-
-[tasks.run-gemma-4-26b]
-description = "Run unsloth/gemma-4-26B-A4B-it-GGUF with llama-cli (Metal GPU, 4 CPU threads)"
-run = "./${BUILD_DIR}/bin/llama-cli -hf unsloth/gemma-4-26B-A4B-it-GGUF -ngl 99 -t 4"
-
-[tasks.run-gemma-4-31b]
-description = "Run unsloth/gemma-4-31B-it-GGUF with llama-cli"
-run = "./${BUILD_DIR}/bin/llama-cli -hf unsloth/gemma-4-31B-it-GGUF"
-
-[tasks.serve-gemma-4-26b]
-description = "Start unsloth/gemma-4-26B-A4B-it-GGUF as background OpenAI-compatible server on :18080 (Metal GPU)"
-run = """
-nohup ./${BUILD_DIR}/bin/llama-server -hf unsloth/gemma-4-26B-A4B-it-GGUF -ngl 99 -t 4 --port 18080 -np 4 \
-  > /tmp/llama-gemma-4-26b.log 2>&1 &
-echo $! > /tmp/llama-gemma-4-26b.pid
-echo "Server started (PID $(cat /tmp/llama-gemma-4-26b.pid)) - http://localhost:18080"
-echo "Logs: tail -f /tmp/llama-gemma-4-26b.log"
-"""
-
 [tasks.serve-nomic-embed]
 description = "Start nomic-ai/nomic-embed-text-v2-moe-GGUF as background embedding server on :18081"
 run = """
@@ -104,17 +82,6 @@ nohup ./${BUILD_DIR}/bin/llama-server -hf CompendiumLabs/bge-m3-gguf -hff bge-m3
 echo $! > /tmp/llama-bge-m3.pid
 echo "Embedding server started (PID $(cat /tmp/llama-bge-m3.pid)) - http://localhost:18083"
 echo "Logs: tail -f /tmp/llama-bge-m3.log"
-"""
-
-[tasks.stop-gemma-4-26b]
-description = "Stop the background Gemma 4 26B server"
-run = """
-PID_FILE=/tmp/llama-gemma-4-26b.pid
-if [ -f "$PID_FILE" ]; then
-  kill "$(cat $PID_FILE)" && rm "$PID_FILE" && echo "Server stopped."
-else
-  echo "No PID file found — server may not be running."
-fi
 """
 
 [tasks.stop-bge-m3]
