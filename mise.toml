@@ -59,12 +59,74 @@ description = "Run yuxinlu1/gemma-4-12B-coder-fable5-composer2.5-v1-GGUF with ll
 run = "./${BUILD_DIR}/bin/llama-cli -hf yuxinlu1/gemma-4-12B-coder-fable5-composer2.5-v1-GGUF"
 
 [tasks.run-gemma-4-26b]
-description = "Run unsloth/gemma-4-26B-A4B-it-GGUF with llama-cli"
-run = "./${BUILD_DIR}/bin/llama-cli -hf unsloth/gemma-4-26B-A4B-it-GGUF"
+description = "Run unsloth/gemma-4-26B-A4B-it-GGUF with llama-cli (Metal GPU, 4 CPU threads)"
+run = "./${BUILD_DIR}/bin/llama-cli -hf unsloth/gemma-4-26B-A4B-it-GGUF -ngl 99 -t 4"
 
 [tasks.run-gemma-4-31b]
 description = "Run unsloth/gemma-4-31B-it-GGUF with llama-cli"
 run = "./${BUILD_DIR}/bin/llama-cli -hf unsloth/gemma-4-31B-it-GGUF"
+
+[tasks.serve-gemma-4-26b]
+description = "Start unsloth/gemma-4-26B-A4B-it-GGUF as background OpenAI-compatible server on :18080 (Metal GPU)"
+run = """
+nohup ./${BUILD_DIR}/bin/llama-server -hf unsloth/gemma-4-26B-A4B-it-GGUF -ngl 99 -t 4 --port 18080 -np 4 \
+  > /tmp/llama-gemma-4-26b.log 2>&1 &
+echo $! > /tmp/llama-gemma-4-26b.pid
+echo "Server started (PID $(cat /tmp/llama-gemma-4-26b.pid)) - http://localhost:18080"
+echo "Logs: tail -f /tmp/llama-gemma-4-26b.log"
+"""
+
+[tasks.serve-nomic-embed]
+description = "Start nomic-ai/nomic-embed-text-v2-moe-GGUF as background embedding server on :18081"
+run = """
+nohup ./${BUILD_DIR}/bin/llama-server --hf-repo nomic-ai/nomic-embed-text-v2-moe-GGUF --hf-file nomic-embed-text-v2-moe.Q4_K_M.gguf --embeddings --port 18081 -np 4 \
+  > /tmp/llama-nomic-embed.log 2>&1 &
+echo $! > /tmp/llama-nomic-embed.pid
+echo "Embedding server started (PID $(cat /tmp/llama-nomic-embed.pid)) - http://localhost:18081"
+echo "Logs: tail -f /tmp/llama-nomic-embed.log"
+"""
+
+[tasks.serve-qwen3-embedding-0-6b]
+description = "Start Qwen/Qwen3-Embedding-0.6B-GGUF as background embedding server on :18082"
+run = """
+nohup ./${BUILD_DIR}/bin/llama-server --hf-repo Qwen/Qwen3-Embedding-0.6B-GGUF --hf-file Qwen3-Embedding-0.6B-Q8_0.gguf --embeddings --port 18082 -np 4 \
+  > /tmp/llama-qwen3-embedding-0-6b.log 2>&1 &
+echo $! > /tmp/llama-qwen3-embedding-0-6b.pid
+echo "Embedding server started (PID $(cat /tmp/llama-qwen3-embedding-0-6b.pid)) - http://localhost:18082"
+echo "Logs: tail -f /tmp/llama-qwen3-embedding-0-6b.log"
+"""
+
+[tasks.serve-bge-m3]
+description = "Start CompendiumLabs/bge-m3-gguf as background embedding server on :18083 (CLS pooling, model default)"
+run = """
+nohup ./${BUILD_DIR}/bin/llama-server -hf CompendiumLabs/bge-m3-gguf -hff bge-m3-f16.gguf --embeddings -c 8192 --port 18083 -np 4 \
+  > /tmp/llama-bge-m3.log 2>&1 &
+echo $! > /tmp/llama-bge-m3.pid
+echo "Embedding server started (PID $(cat /tmp/llama-bge-m3.pid)) - http://localhost:18083"
+echo "Logs: tail -f /tmp/llama-bge-m3.log"
+"""
+
+[tasks.stop-gemma-4-26b]
+description = "Stop the background Gemma 4 26B server"
+run = """
+PID_FILE=/tmp/llama-gemma-4-26b.pid
+if [ -f "$PID_FILE" ]; then
+  kill "$(cat $PID_FILE)" && rm "$PID_FILE" && echo "Server stopped."
+else
+  echo "No PID file found — server may not be running."
+fi
+"""
+
+[tasks.stop-bge-m3]
+description = "Stop the background bge-m3 embedding server"
+run = """
+PID_FILE=/tmp/llama-bge-m3.pid
+if [ -f "$PID_FILE" ]; then
+  kill "$(cat $PID_FILE)" && rm "$PID_FILE" && echo "Server stopped."
+else
+  echo "No PID file found — server may not be running."
+fi
+"""
 
 [tasks.serve]
 description = "Start the OpenAI-compatible server with a local GGUF model; pass MODEL=/absolute/path/to/model.gguf"
@@ -77,3 +139,10 @@ run = "./${BUILD_DIR}/bin/llama-server -hf \"${HF_MODEL:?Set HF_MODEL=org/model-
 [tasks.clean]
 description = "Remove local build directories and the Python virtual environment"
 run = "rm -rf ${BUILD_DIR} ${DEBUG_BUILD_DIR} ${STATIC_BUILD_DIR} ${CUDA_BUILD_DIR} ${CPU_ONLY_BUILD_DIR} .venv .pytest_cache .ruff_cache"
+
+[tasks.show-downloaded-models]
+description = "Show the downloaded models"
+run = """
+./build/bin/llama-server --cache-list
+"""
+
